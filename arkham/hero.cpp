@@ -91,8 +91,8 @@ int getresult(const char* result, int success_number) {
 	return r;
 }
 
-static void adddie(char* result) {
-
+static void addie(char* result) {
+	zcat(result, (char)(1 + (rand() % 6)));
 }
 
 int hero::roll(stat_s id, int bonus, int difficult, bool interactive) {
@@ -102,7 +102,7 @@ int hero::roll(stat_s id, int bonus, int difficult, bool interactive) {
 	auto success_number = 5;
 	auto ps = logs::getptr();
 	for(auto i = 0; i < count; i++)
-		zcat(result, (char)(1 + (rand() % 6)));
+		addie(result);
 	while(true) {
 		if(result[0]) {
 			szprint(ps, "Вы выбросили: ");
