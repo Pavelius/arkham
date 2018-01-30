@@ -76,6 +76,12 @@
     <ClCompile Include="print.cpp">
       <Filter>Logic</Filter>
     </ClCompile>
+    <ClCompile Include="item.cpp">
+      <Filter>Logic</Filter>
+    </ClCompile>
+    <ClCompile Include="action.cpp">
+      <Filter>Logic</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Logic">

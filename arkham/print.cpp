@@ -1,7 +1,7 @@
 #include "main.h"
 
 int logs::getwidth(int panel) {
-	return 0;
+	return 300;
 }
 
 const char* logs::getpanel(int panel) {
@@ -56,28 +56,11 @@ void logs::driver::parseidentifier(char* result, const char* result_max, const c
 	}
 }
 
-void actor::act(const char* format, ...) const {
+void hero::act(const char* format, ...) const {
 	logs::driver driver;
-	driver.name = thing::getname();
+	driver.name = getname();
 	driver.gender = getgender();
 	driver.opponent_name = 0;
 	driver.opponent_gender = Male;
 	logs::addv(driver, format, xva_start(format));
-}
-
-void actor::act(actor& enemy, const char* format, ...) const {
-	logs::driver driver;
-	driver.name = thing::getname();
-	driver.gender = getgender();
-	driver.opponent_name = enemy.getname();
-	driver.opponent_gender = enemy.getgender();
-	logs::addv(driver, format, xva_start(format));
-}
-
-int	actor::addbonus(state_s id) {
-	if(is(id)) {
-		remove(id);
-		return 1;
-	}
-	return 0;
 }
