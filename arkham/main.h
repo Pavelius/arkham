@@ -8,8 +8,14 @@
 
 #pragma once
 
+#define assert_enum(e, last) static_assert(sizeof(e##_data) / sizeof(e##_data[0]) == last + 1, "Invalid count of " #e " elements")
+#define getstr_enum(e) template<> const char* getstr<e##_s>(e##_s value) { return e##_data[value].name; }
+#define maptbl(t, id) (t[imax((unsigned)0, imin((unsigned)id, (sizeof(t)/sizeof(t[0])-1)))])
+#define maprnd(t) t[rand()%(sizeof(t)/sizeof(t[0]))]
+#define lenghtof(t) (sizeof(t)/sizeof(t[0]))
+
 enum stat_s : unsigned char {
-	Speed, Sneack, Fight, Will, Lore, Luck,
+	Speed, Sneak, Fight, Will, Lore, Luck,
 	Sanity, Stamina,
 	Clue, Money,
 	// Special damage
@@ -64,9 +70,8 @@ enum item_s : unsigned char {
 	FleshWard, Heal, MistOfReleh, RedSignOfShuddleMell,
 	Shrivelling, VoiceOfRa, Wither,
 	// Skills
-	SkillBarvery, SkillExpertOccultist,
-	SkillFight, SkillLore, SkillLuck, SkillMarksman,
-	SkillSneak, SkillSpeed, SkillStealth, SkillWill,
+	SkillBarvery, SkillExpertOccultist, SkillMarksman,
+	SkillSpeed, SkillSneak, SkillFight, SkillWill, SkillLore, SkillLuck,
 	//
 	AllyDuke,
 };
@@ -94,6 +99,7 @@ struct item {
 	constexpr item(item_s type) : type(type), exhause(0), magic(0), marker(0) {}
 	bool operator==(item_s v) const { return type == v; }
 	operator bool() const { return type!=0; }
+	bool			isexhause() const { return exhause != 0; }
 private:
 	item_s			type;
 	unsigned char	exhause : 1;
@@ -137,6 +143,7 @@ struct hero {
 	operator bool() const { return name != 0; }
 	void			act(const char* format, ...) const;
 	bool			add(item_s e);
+	void			add(stat_s id, int value) { set(id, get(id) + value); }
 	void			apply(tid id, number_s value);
 	void			clear();
 	void			create(const char* id);

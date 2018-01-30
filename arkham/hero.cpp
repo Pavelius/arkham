@@ -28,7 +28,7 @@ char hero::get(stat_s id) const {
 	case Fight:
 	case Lore:
 		return stats[id] + focus[id / 2];
-	case Sneack:
+	case Sneak:
 	case Will:
 	case Luck:
 		return stats[id] - focus[id / 2];
@@ -51,11 +51,16 @@ void hero::create(const char* id) {
 	setname(p->name);
 	for(auto i = Speed; i <= Luck; i = (stat_s)(i + 1))
 		set(i, p->stats[i]);
+	for(auto& e : p->possessions)
+		apply(e.result, e.count);
 }
 
 bool hero::is(item_s v) const {
+	if(!v)
+		return false;
 	for(auto e : possession) {
 		if(!e)
+		if(e.isexhause())
 			continue;
 		if(e == v)
 			return true;
@@ -84,7 +89,7 @@ static char* dices(char* result, const char* source) {
 
 int getresult(const char* result, int success_number) {
 	auto r = 0;
-	for(auto i = 0; result[i]>0; i++) {
+	for(auto i = 0; result[i] > 0; i++) {
 		if(result[i] >= success_number)
 			r++;
 	}
@@ -95,8 +100,33 @@ static void addie(char* result) {
 	zcat(result, (char)(1 + (rand() % 6)));
 }
 
+char* getstr(char* result, stat_s id, int bonus) {
+	if(bonus > 0)
+		return szprint(result, "%1+%2i", getstr(id), bonus);
+	else if(bonus < 0)
+		return szprint(result, "%1-%2i", getstr(id), -bonus);
+	else
+		return szprint(result, "%1", getstr(id));
+}
+
+item_s getskill(stat_s id) {
+	switch(id) {
+	case Fight: return SkillFight;
+	case Will: return SkillWill;
+	case Speed: return SkillSpeed;
+	case Sneak: return SkillSneak;
+	case Lore: return SkillLore;
+	case Luck: return SkillLuck;
+	default: return NoItem;
+	}
+}
+
 int hero::roll(stat_s id, int bonus, int difficult, bool interactive) {
-	char result[32]; result[0] = 0;
+	int i;
+	char result[32]; result[0] = 0; char temp[128];
+	auto skill = getskill(id);
+	if(is(skill))
+		bonus++;
 	auto count = get(id) + bonus;
 	auto success = 0;
 	auto success_number = 5;
@@ -105,20 +135,34 @@ int hero::roll(stat_s id, int bonus, int difficult, bool interactive) {
 		addie(result);
 	while(true) {
 		if(result[0]) {
-			szprint(ps, "Вы выбросили: ");
+			szprint(ps, "Вы сделали бросок [%1] и выбросили: ", getstr(temp, id, bonus));
 			dices(zend(ps), result);
 			zcat(ps, ". ");
 		} else {
 			szprint(ps, "У вас недостаточно кубиков для броска.");
 		}
 		auto rn = getresult(result, success_number);
-		if(success>=difficult)
+		if(success >= difficult)
 			logs::add(1, "Принять результат с [%1i] успехами.", rn);
 		else
 			logs::add(1, "Принять провал.");
+		if(get(Clue))
+			logs::add(2, "Потратить улику, чтобы добавить к броску 1 кубик (осталось [%1i] улик).", get(Clue));
 		auto id = logs::input(interactive, false, "Что будете делать?");
 		switch(id) {
-		case 1: return success - difficult;
+		case 1:
+			return success - difficult;
+		case 2:
+			addie(result);
+			if(is(skill))
+				addie(result);
+			add(Clue, -1);
+			break;
+		case 3:
+			i = zlen(result); result[0] = 0;
+			while(i-->0)
+				addie(result);
+			break;
 		}
 	}
 }

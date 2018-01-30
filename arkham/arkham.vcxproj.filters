@@ -85,6 +85,9 @@
     <ClCompile Include="card.cpp">
       <Filter>Logic</Filter>
     </ClCompile>
+    <ClCompile Include="stat.cpp">
+      <Filter>Logic</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Logic">

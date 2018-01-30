@@ -160,6 +160,7 @@
     <ClCompile Include="print.cpp" />
     <ClCompile Include="quest.cpp" />
     <ClCompile Include="sprite.cpp" />
+    <ClCompile Include="stat.cpp" />
     <ClCompile Include="stringcreator.cpp" />
     <ClCompile Include="surface.cpp" />
     <ClCompile Include="surface_serial.cpp" />

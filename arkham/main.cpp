@@ -2,7 +2,7 @@
 
 void test_main() {
 	player.create("ashcan");
-	player.roll(Sneack);
+	player.roll(Sneak);
 }
 
 int main() {
