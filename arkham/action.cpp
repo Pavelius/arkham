@@ -10,20 +10,19 @@ static stat_s getstat(tid id) {
 	return Speed;
 }
 
-char hero::getcount(stat_s id, int value) const {
+char hero::getcount(stat_s id, number_s value) const {
 	switch(value) {
 	case Half: return get(id) / 2;
 	case All: return get(id);
 	case OneDice: return 1 + rand() % 6;
 	case TwoDice: return 2 + rand() % 6 + rand() % 6;
-	case 0: return 1;
-	default: return value;
+	default: return 1 + (value - One);
 	}
 }
 
-void hero::apply(tid id, int value) {
+void hero::apply(tid id, number_s count) {
 	stat_s stat;
-	char count;
+	char value;
 	if(!id)
 		return;
 	switch(id.type) {
@@ -32,17 +31,18 @@ void hero::apply(tid id, int value) {
 		case AddClue:
 		case AddMoney:
 			stat = getstat(id);
-			count = getcount(stat, value);
-			set(stat, get(stat) + count);
+			value = getcount(stat, count);
+			set(stat, get(stat) + value);
 			break;
 		case LoseClue:
 		case LoseSanity:
 		case LoseStamina:
 			stat = getstat(id);
-			count = -getcount(stat, value);
-			set(stat, get(stat) + count);
+			value = getcount(stat, count);
+			set(stat, get(stat) - value);
 			break;
 		}
 		break;
+	case Items: add((item_s)id.value); break;
 	}
 }
