@@ -9,9 +9,10 @@ static struct hero_i {
 	location_s			location;
 	char				sanity, stamina;
 	char				stats[Luck + 1];
-	quest::outcome		possessions[8];
+	action_s			possessions[8];
+	item_s				possessions_items[4];
 } hero_data[] = {
-	{"ashcan", "Ашхан \"Пит\"", Scrounge, RiverDocks, 4, 6, {0, 6, 2, 5, 0, 3}, {{AddMoney, One}, {AddClue, Three}, {AllyDuke}, {AddCommonItem}, {AddUniqueItem}, {AddSpell}}}
+	{"ashcan", "Ашхан \"Пит\"", Scrounge, RiverDocks, 4, 6, {0, 6, 2, 5, 0, 3}, {Add1Money, Add3Clue, AddCommonItem, AddUniqueItem, AddSpell}, {AllyDuke}},
 };
 
 static hero_i* find(const char* id) {
@@ -51,8 +52,10 @@ void hero::create(const char* id) {
 	setname(p->name);
 	for(auto i = Speed; i <= Luck; i = (stat_s)(i + 1))
 		set(i, p->stats[i]);
-	for(auto& e : p->possessions)
-		apply(e.result, e.count);
+	for(auto e : p->possessions)
+		apply(e);
+	for(auto e : p->possessions_items)
+		add(e);
 }
 
 bool hero::is(item_s v) const {
@@ -60,8 +63,8 @@ bool hero::is(item_s v) const {
 		return false;
 	for(auto e : possession) {
 		if(!e)
-		if(e.isexhause())
-			continue;
+			if(e.isexhause())
+				continue;
 		if(e == v)
 			return true;
 	}
@@ -69,11 +72,22 @@ bool hero::is(item_s v) const {
 }
 
 bool hero::add(item_s v) {
+	if(!v)
+		return false;
 	for(auto& e : possession) {
 		if(!e) {
 			e = v;
 			return true;
 		}
+	}
+	return false;
+}
+
+bool hero::remove(item_s v) {
+	for(auto& e : possession) {
+		if(e == v)
+			e.clear();
+		return true;
 	}
 	return false;
 }
@@ -156,13 +170,45 @@ int hero::roll(stat_s id, int bonus, int difficult, bool interactive) {
 			addie(result);
 			if(is(skill))
 				addie(result);
+			if(is(Hunches))
+				addie(result);
 			add(Clue, -1);
 			break;
 		case 3:
 			i = zlen(result); result[0] = 0;
-			while(i-->0)
+			while(i-- > 0)
 				addie(result);
 			break;
 		}
 	}
+}
+
+void hero::choose(stat_s id, int count, int draw_count, int draw_bottom) {
+	deck result; deck& source = deck::getdeck(id);
+	result.draw(source, draw_count);
+	result.drawb(source, draw_bottom);
+	if(!result.count)
+		return;
+	if(count < (int)result.count) {
+		while(count-->0) {
+			for(unsigned i = 0; i < result.count; i++)
+				logs::add(i, getstr(result.data[i]));
+			logs::sort();
+			auto i = logs::input(true, false, (count > 0) ? "Выберите [%1] (осталось %2i):" : "Выберите [%1]:", getstr(id), count + 1);
+			add(result.data[i]);
+			result.remove(i);
+		}
+	}
+	for(auto e : result)
+		source.add(e);
+}
+
+void hero::choose(stat_s id, int count) {
+	auto draw_count = count;
+	auto draw_bottom = 0;
+	if(is(Scrounge)) {
+		if(id == CommonItem || id == UniqueItem || id == Spell)
+			draw_bottom++;
+	}
+	choose(id, count, draw_count, draw_bottom);
 }

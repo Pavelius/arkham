@@ -1,13 +1,15 @@
 #include "main.h"
 
 void test_main() {
+	deck::getdeck(CommonItem).create(CommonItem);
+	deck::getdeck(UniqueItem).create(UniqueItem);
 	player.create("ashcan");
 	player.roll(Sneak);
 }
 
 int main() {
 	//srand(clock());
-	srand(100);
+	srand(120);
 	logs::open("Arkham horror");
 	test_main();
 	return 0;

@@ -24,18 +24,26 @@ enum stat_s : unsigned char {
 	CombatCheck, EvadeCheck, HorrorCheck, SkillCheck, SpellCheck,
 	// Calculated values
 	Movement, TestOneDie, TestTwoDie,
+	// Item groups
+	CommonItem, UniqueItem, Spell, Skill,
 };
 enum gender_s : unsigned char {
 	Male, Female,
 };
-enum item_group_s : unsigned char {
-	CommonItem, UniqueItem, Spell,
-};
 enum action_s : unsigned char {
 	NoAction,
-	AddClue, AddCommonItem, AddMoney, AddSanity, AddSkill, AddSpell, AddStamina, AddUniqueItem,
-	LoseClue, LoseItem, LoseSanity, LoseStamina,
-	PayCommonItem, PayUniqueItem,
+	Add1Clue, Add2Clue, Add3Clue, Add4Clue, Add5Clue,
+	Lose1Clue, Lose2Clue, Lose3Clue, Lose4Clue, Lose5Clue,
+	Add1Money, Add2Money, Add3Money, Add4Money, Add5Money,
+	Lose1Money, Lose2Money, Lose3Money, Lose4Money, Lose5Money,
+	Add1Sanity, Add2Sanity, Add3Sanity,
+	Lose1Sanity, Lose2Sanity, Lose3Sanity,
+	Add1Stamina, Add2Stamina, Add3Stamina,
+	Lose1Stamina, Lose2Stamina, Lose3Stamina,
+	AddCommonItem,
+	AddUniqueItem,
+	AddSkill,
+	AddSpell,
 	Discard
 };
 enum number_s : unsigned char {
@@ -79,10 +87,9 @@ enum tid_s : unsigned char {
 	Actions, Stats, Items,
 };
 enum special_s : unsigned char {
-	Scrounge,
+	Hunches, Scrounge,
 };
-template<typename T>
-struct cflags {
+template<typename T> struct cflags {
 	constexpr cflags() : data() {}
 	constexpr cflags(const std::initializer_list<T> list) : data(gen(0, list.begin(), list.end())) {}
 	bool		is(T id) const { return (data & (1 << id)) != 0; }
@@ -99,7 +106,9 @@ struct item {
 	constexpr item(item_s type) : type(type), exhause(0), magic(0), marker(0) {}
 	bool operator==(item_s v) const { return type == v; }
 	operator bool() const { return type!=0; }
+	void			clear();
 	bool			isexhause() const { return exhause != 0; }
+	static stat_s	getgroup(item_s id);
 private:
 	item_s			type;
 	unsigned char	exhause : 1;
@@ -117,15 +126,10 @@ struct tid {
 	constexpr operator unsigned short() const { return ((type << 8) | (value)); }
 };
 struct quest {
-	struct outcome {
-		operator bool() const { return result != 0; }
-		tid			result;
-		number_s	count;
-	};
 	struct action {
 		operator bool() const { return text != 0; }
 		const char*	text;
-		outcome		results[4];
+		action_s	results[4];
 	};
 	struct roll_i {
 		tid			action;
@@ -139,22 +143,35 @@ struct quest {
 	action			results[4];
 	operator bool() const { return text != 0; }
 };
+struct deck : adat<item_s, 128> {
+	deck() { initialize(); }
+	void			add(item_s id);
+	void			create(stat_s	group);
+	static void		discard(item_s id);
+	item_s			draw();
+	item_s			drawb();
+	void			draw(deck& source, int count);
+	void			drawb(deck& source, int count);
+	static deck&	getdeck(stat_s id);
+};
 struct hero {
 	operator bool() const { return name != 0; }
 	void			act(const char* format, ...) const;
 	bool			add(item_s e);
 	void			add(stat_s id, int value) { set(id, get(id) + value); }
-	void			apply(tid id, number_s value);
+	void			apply(action_s id);
 	void			clear();
+	void			choose(stat_s id, int count);
+	void			choose(stat_s id, int count, int draw_count, int draw_bottom);
 	void			create(const char* id);
 	gender_s		getgender() const { return gender; }
 	const char*		getname() const { return name; }
 	char			get(stat_s id) const;
 	char			getcount(stat_s id, number_s value) const;
 	location_s		getlocation() const { return location; }
-	special_s		getspecial() const { return special; }
 	bool			is(item_s e) const;
-	void			remove(item_s e);
+	bool			is(special_s v) const { return special == v; }
+	bool			remove(item_s e);
 	int				roll(stat_s id, int bonus = 0, int difficult = 0, bool interactive = true);
 	void			run(quest& e);
 	void			set(location_s v) { location = v; }
@@ -180,6 +197,4 @@ struct driver : stringcreator {
 	void			parseidentifier(char* result, const char* result_max, const char* identifier) override;
 };
 }
-extern hero					player;
-extern adat<item_s, 128>	common_items;
-extern adat<item_s, 128>	unique_items;
+extern hero			player;

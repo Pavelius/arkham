@@ -24,9 +24,14 @@ static struct stat_i {
 {"Skill Check", "Бросок любого навыка"},
 {"Spell Check", "Бросок заклинаний"},
 // Calculated values
-{"Movement", "Движение"},
+{"Movement", "движение"},
 {"Test One Die"},
 {"Test Two Die"},
+//
+{"Common Item", "Общий предмет"},
+{"Unique Item", "Уникальный предмет"},
+{"Spell", "Заклинание"},
+{"Skill", "Навык"},
 };
-assert_enum(stat, TestTwoDie);
+assert_enum(stat, Skill);
 getstr_enum(stat);
