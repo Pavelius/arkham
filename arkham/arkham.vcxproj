@@ -140,7 +140,6 @@
     <ClCompile Include="action.cpp" />
     <ClCompile Include="bitops.cpp" />
     <ClCompile Include="bstream.cpp" />
-    <ClCompile Include="card.cpp" />
     <ClCompile Include="color.cpp" />
     <ClCompile Include="command.cpp" />
     <ClCompile Include="crt.cpp" />

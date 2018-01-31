@@ -3,7 +3,7 @@
 void test_main() {
 	deck::getdeck(CommonItem).create(CommonItem);
 	deck::getdeck(UniqueItem).create(UniqueItem);
-	player.create("ashcan");
+	player.create("joe");
 	player.roll(Sneak);
 }
 

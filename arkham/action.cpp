@@ -41,6 +41,7 @@ static struct action_i {
 	{"lose 2 staminas", "потерять 2 жизни", Stamina, 2, &hero::add},
 	{"lose 3 staminas", "потерять 3 жизни", Stamina, 3, &hero::add},
 	{"gain common item", "получить обычный предмет", CommonItem, 1, &hero::choose},
+	{"gain 2 common items", "получить 2 обычных предмета", CommonItem, 2, &hero::choose},
 	{"gain unique item", "получить уникальный предмет", UniqueItem, 1, &hero::choose},
 	{"gain skill", "получить навык", Skill, 1, &hero::choose},
 	{"gain spell", "получить заклинание", Spell, 1, &hero::choose},

@@ -2,6 +2,8 @@
 
 static deck common_items;
 static deck unique_items;
+static deck spell_items;
+static deck skill_items;
 
 void deck::add(item_s id) {
 	if(id)
@@ -39,6 +41,8 @@ deck& deck::getdeck(stat_s id) {
 	switch(id) {
 	case UniqueItem: return unique_items;
 	case CommonItem: return common_items;
+	case Spell: return spell_items;
+	case Skill: return skill_items;
 	default: assert(0); return common_items;
 	}
 }

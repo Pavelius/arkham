@@ -13,6 +13,7 @@ static struct hero_i {
 	item_s				possessions_items[4];
 } hero_data[] = {
 	{"ashcan", "Ашхан \"Пит\"", Scrounge, RiverDocks, 4, 6, {0, 6, 2, 5, 0, 3}, {Add1Money, Add3Clue, AddCommonItem, AddUniqueItem, AddSpell}, {AllyDuke}},
+	{"joe", "Джо Диамонд", Hunches, PoliceStation, 4, 6, {3, 4, 2, 3, 0, 3}, {Add5Money, Add3Clue, Add2CommonItem, AddSkill}, {PistolAutomatic45}},
 };
 
 static hero_i* find(const char* id) {

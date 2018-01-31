@@ -40,7 +40,7 @@ enum action_s : unsigned char {
 	Lose1Sanity, Lose2Sanity, Lose3Sanity,
 	Add1Stamina, Add2Stamina, Add3Stamina,
 	Lose1Stamina, Lose2Stamina, Lose3Stamina,
-	AddCommonItem,
+	AddCommonItem, Add2CommonItem,
 	AddUniqueItem,
 	AddSkill,
 	AddSpell,
@@ -52,7 +52,7 @@ enum number_s : unsigned char {
 };
 enum location_s : unsigned char {
 	AnyLocation,
-	AdministrationBuilding, ArkhamAsylum, RiverDocks, TrainStation, Woods
+	AdministrationBuilding, ArkhamAsylum, PoliceStation, RiverDocks, TrainStation, Woods
 };
 enum tag_s : unsigned char {
 	Tome, PhysicalWeapon, MagicalWeapon,
