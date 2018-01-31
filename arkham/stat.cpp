@@ -5,7 +5,7 @@ static struct stat_i {
 	const char*			name;
 } stat_data[] = {{"Speed", "Скорость"},
 {"Sneack", "Скрытность"},
-{"Fight", "Сражение"},
+{"Fight", "Бой"},
 {"Will", "Воля"},
 {"Lore", "Знания"},
 {"Luck", "Удача"},

@@ -53,8 +53,30 @@ static constexpr const struct item_i {
 	{"Shotgun", "Дробовик", CommonItem, 2, 6, 2, {CombatCheck, 4}, {}, {PhysicalWeapon, SixDoubleSuccess}},
 	{"Tommy Gun", "Автомат", CommonItem, 2, 7, 2, {CombatCheck, 6}, {}, {PhysicalWeapon}},
 	{"Whiskey", "Виски", CommonItem, 2, 1, 0, {Sanity, 1}, {}, {DiscardAfterUse}},
+	//
+	{"Skill Bravery", "Храбрость", Skill, 2, 8},
+	{"Skill Expert Occultist", "Оккултист эксперт", Skill, 2, 8},
+	{"Skill Marksman", "Мастер боя", Skill, 2, 8},
+	{"Skill Speed", "Скорость", Skill, 2, 8},
+	{"Skill Sneak", "Скрытность", Skill, 2, 8},
+	{"Skill Fight", "Бой", Skill, 2, 8},
+	{"Skill Will", "Воля", Skill, 2, 8},
+	{"Skill Lore", "Знания", Skill, 2, 8},
+	{"Skill Luck", "Удача", Skill, 2, 8},
+	//
+	{"Bind Monster", "Подчинить монстра", Spell, 2},
+	{"Dread Curse of Azathoth", "Ужасное проклятие Азазоса", Spell, 2},
+	{"Enchant Weapon", "Зачоровать оружие", Spell, 2},
+	{"Find Gate", "Найти врата", Spell, 2},
+	{"Flesh Ward", "Защита плоти", Spell, 2},
+	{"Heal", "Исцеление", Spell, 2},
+	{"Mist of Releh", "Туман Рильеха", Spell, 2},
+	{"Red Sign of Shuddle Mell", "Красная метка Шудл Мелла", Spell, 2},
+	{"Shrivelling", "Иссушение", Spell, 2},
+	{"Voice of Ra", "Голос Ра", Spell, 2},
+	{"Wither", "Ломка", Spell, 2},
 };
-assert_enum(item, Whiskey);
+assert_enum(item, Wither);
 getstr_enum(item);
 
 void deck::create(stat_s group) {
@@ -69,10 +91,6 @@ void deck::create(stat_s group) {
 	zshuffle(data, count);
 }
 
-stat_s item::getgroup(item_s id) {
+stat_s deck::getgroup(item_s id) {
 	return item_data[id].type;
-}
-
-void item::clear() {
-	memset(this, 0, sizeof(*this));
 }

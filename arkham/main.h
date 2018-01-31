@@ -34,7 +34,7 @@ enum action_s : unsigned char {
 	NoAction,
 	Add1Clue, Add2Clue, Add3Clue, Add4Clue, Add5Clue,
 	Lose1Clue, Lose2Clue, Lose3Clue, Lose4Clue, Lose5Clue,
-	Add1Money, Add2Money, Add3Money, Add4Money, Add5Money,
+	Add1Money, Add2Money, Add3Money, Add4Money, Add5Money, Add6Money, Add7Money, Add8Money, Add9Money, Add10Money,
 	Lose1Money, Lose2Money, Lose3Money, Lose4Money, Lose5Money,
 	Add1Sanity, Add2Sanity, Add3Sanity,
 	Lose1Sanity, Lose2Sanity, Lose3Sanity,
@@ -66,6 +66,13 @@ enum item_s : unsigned char {
 	AncientTome, Axe, Bullwhip, CavalrySaber, Cross, DarkCloak, Dynamite, Food, Knife,
 	Lantern, LuckyCigaretteCase, MapOfArkham, Motorcycle, OldJournal, ResearchMaterials, Rifle,
 	Shotgun, TommyGun, Whiskey,
+	// Skills
+	SkillBarvery, SkillExpertOccultist, SkillMarksman,
+	SkillSpeed, SkillSneak, SkillFight, SkillWill, SkillLore, SkillLuck,
+	// Spells
+	BindMonster, DreadCurseOfAzathoth, EnchantWeapon, FindGate,
+	FleshWard, Heal, MistOfReleh, RedSignOfShuddleMell,
+	Shrivelling, VoiceOfRa, Wither,
 	// Unique items
 	AlienStatue, AncientTablet, AstralMirror, BlueWatcherOfThePyramid, CamillasRuby,
 	CarcosanPage, CryptozoologyCollection, CrystalOfTheElderThings, DragonsEye,
@@ -73,15 +80,9 @@ enum item_s : unsigned char {
 	GateBox, HealingStone, HolyWater, LampOfAlhazred, NamelessCults,
 	Necronomicon, ObsidianStatue, PallidMask, PowderOfIbnGhazi, RubyOfRlyeh,
 	SilverKey, SwordOfGlory, TheKingInYellow, WardingStatue,
-	// Spells
-	BindMonster, DreadCurseOfAzathoth, EnchantWeapon, FindGate,
-	FleshWard, Heal, MistOfReleh, RedSignOfShuddleMell,
-	Shrivelling, VoiceOfRa, Wither,
-	// Skills
-	SkillBarvery, SkillExpertOccultist, SkillMarksman,
-	SkillSpeed, SkillSneak, SkillFight, SkillWill, SkillLore, SkillLuck,
 	//
 	AllyDuke,
+	LastItem = AllyDuke
 };
 enum tid_s : unsigned char {
 	Actions, Stats, Items,
@@ -100,20 +101,6 @@ private:
 	static constexpr unsigned gen(unsigned r, const T* ps, const T* pe) {
 		return (ps < pe) ? gen(r | (1 << (*ps)), ps + 1, pe) : r;
 	}
-};
-struct item {
-	item() = default;
-	constexpr item(item_s type) : type(type), exhause(0), magic(0), marker(0) {}
-	bool operator==(item_s v) const { return type == v; }
-	operator bool() const { return type!=0; }
-	void			clear();
-	bool			isexhause() const { return exhause != 0; }
-	static stat_s	getgroup(item_s id);
-private:
-	item_s			type;
-	unsigned char	exhause : 1;
-	unsigned char	magic : 1;
-	unsigned char	marker : 3;
 };
 struct tid {
 	tid_s			type;
@@ -144,7 +131,7 @@ struct quest {
 	operator bool() const { return text != 0; }
 };
 struct deck : adat<item_s, 128> {
-	deck() { initialize(); }
+	deck() { adat::initialize(); }
 	void			add(item_s id);
 	void			create(stat_s	group);
 	static void		discard(item_s id);
@@ -153,11 +140,13 @@ struct deck : adat<item_s, 128> {
 	void			draw(deck& source, int count);
 	void			drawb(deck& source, int count);
 	static deck&	getdeck(stat_s id);
+	static stat_s	getgroup(item_s id);
+	static void		initialize();
 };
 struct hero {
 	operator bool() const { return name != 0; }
 	void			act(const char* format, ...) const;
-	bool			add(item_s e);
+	void			add(item_s id) { if(id) cards[id]++; }
 	void			add(stat_s id, int value) { set(id, get(id) + value); }
 	void			apply(action_s id);
 	void			clear();
@@ -167,17 +156,19 @@ struct hero {
 	gender_s		getgender() const { return gender; }
 	const char*		getname() const { return name; }
 	char			get(stat_s id) const;
+	char			get(item_s id) const;
 	char			getcount(stat_s id, number_s value) const;
 	location_s		getlocation() const { return location; }
-	bool			is(item_s e) const;
 	bool			is(special_s v) const { return special == v; }
 	bool			remove(item_s e);
 	int				roll(stat_s id, int bonus = 0, int difficult = 0, bool interactive = true);
 	void			run(quest& e);
+	void			select(deck& result, stat_s group) const;
 	void			set(location_s v) { location = v; }
 	void			set(special_s id) { special = id; }
 	void			set(stat_s id, int v) { stats[id] = v; }
 	void			setname(const char* v) { name = v; }
+	void			upkeep();
 private:
 	const char*		name;
 	gender_s		gender;
@@ -185,7 +176,8 @@ private:
 	special_s		special;
 	char			stats[Money + 1];
 	char			focus[3];
-	item			weapon[2], possession[24];
+	char			cards[LastItem];
+	char			exhause[LastItem];
 };
 namespace logs {
 struct driver : stringcreator {

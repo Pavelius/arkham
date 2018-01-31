@@ -48,5 +48,11 @@ deck& deck::getdeck(stat_s id) {
 }
 
 void deck::discard(item_s id) {
-	getdeck(item::getgroup(id)).add(id);
+	getdeck(getgroup(id)).add(id);
+}
+
+void deck::initialize() {
+	getdeck(CommonItem).create(CommonItem);
+	getdeck(UniqueItem).create(UniqueItem);
+	getdeck(Skill).create(Skill);
 }

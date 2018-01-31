@@ -1,8 +1,7 @@
 #include "main.h"
 
 void test_main() {
-	deck::getdeck(CommonItem).create(CommonItem);
-	deck::getdeck(UniqueItem).create(UniqueItem);
+	deck::initialize();
 	player.create("joe");
 	player.roll(Sneak);
 }

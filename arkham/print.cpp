@@ -5,7 +5,7 @@ int logs::getwidth(int panel) {
 }
 
 const char* logs::getpanel(int panel) {
-	return 0;
+	return "%investigator";
 }
 
 static void msg(gender_s gender, char* result, const char* text_male, const char* text_female, const char* text_pluar) {
@@ -63,4 +63,53 @@ void hero::act(const char* format, ...) const {
 	driver.opponent_name = 0;
 	driver.opponent_gender = Male;
 	logs::addv(driver, format, xva_start(format));
+}
+
+static void show_items(char* result, deck& source, const char* title) {
+	if(!source.count)
+		return;
+	szprint(result, "%1: ", title);
+	result = zend(result);
+	for(auto e : source) {
+		if(result[0])
+			zcat(result, ", ");
+		szprint(zend(result), getstr(e));
+	}
+	zcat(result, ".\n");
+}
+
+static void show_items(char* result, hero& player, const char* title, stat_s group) {
+	deck items;
+	player.select(items, group);
+	show_items(result, items, title);
+}
+
+static void show_items(char* result, hero& player, const char* title, stat_s g1, stat_s g2) {
+	deck items;
+	player.select(items, g1);
+	player.select(items, g2);
+	show_items(result, items, title);
+}
+
+PRINTPLG(investigator) {
+	logs::driver driver; result[0] = 0;
+	driver.name = player.getname();
+	driver.gender = player.getgender();
+	driver.print(zend(result), "###%герой\n");
+	auto ps = zend(result);
+	for(auto i = Speed; i <= Luck; i = stat_s(i + 1)) {
+		if(ps[0]) {
+			if(i==Will)
+				zcat(ps, "\n:::");
+			else
+				zcat(ps, ", ");
+		}
+		driver.print(zend(ps), "%1 %2i", getstr(i), player.get(i));
+	}
+	zcat(ps, "\n");
+	show_items(zend(ps), player, getstr(Skill), Skill);
+	show_items(zend(ps), player, "Предметы", CommonItem, UniqueItem);
+	ps = zend(result);
+	szprint(ps, "У вас есть: %1i$, %2i улик.\n", player.get(Money), player.get(Clue));
+	return result;
 }
