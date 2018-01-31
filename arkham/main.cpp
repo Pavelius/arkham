@@ -3,6 +3,7 @@
 void test_main() {
 	deck::initialize();
 	player.create("joe");
+	player.upkeep();
 	player.roll(Sneak);
 }
 

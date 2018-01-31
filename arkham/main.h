@@ -17,7 +17,7 @@
 enum stat_s : unsigned char {
 	Speed, Sneak, Fight, Will, Lore, Luck,
 	Sanity, Stamina,
-	Clue, Money,
+	Clue, Money, Focus,
 	// Special damage
 	StaminaMaximum, SanityMaximum,
 	// Special checks
@@ -47,8 +47,7 @@ enum action_s : unsigned char {
 	Discard
 };
 enum number_s : unsigned char {
-	One, Two, Three, Four, Five, Six, Seven, Eight, Nine, Ten,
-	All, Half, OneDice, TwoDice,
+	All=100, Half, OneDice, TwoDice,
 };
 enum location_s : unsigned char {
 	AnyLocation,
@@ -148,16 +147,17 @@ struct hero {
 	void			act(const char* format, ...) const;
 	void			add(item_s id) { if(id) cards[id]++; }
 	void			add(stat_s id, int value) { set(id, get(id) + value); }
-	void			apply(action_s id);
+	void			apply(action_s id, bool* discard = 0);
 	void			clear();
 	void			choose(stat_s id, int count);
 	void			choose(stat_s id, int count, int draw_count, int draw_bottom);
 	void			create(const char* id);
+	void			focusing();
 	gender_s		getgender() const { return gender; }
 	const char*		getname() const { return name; }
 	char			get(stat_s id) const;
 	char			get(item_s id) const;
-	char			getcount(stat_s id, number_s value) const;
+	char			getcount(stat_s id, char value) const;
 	location_s		getlocation() const { return location; }
 	bool			is(special_s v) const { return special == v; }
 	bool			remove(item_s e);
@@ -169,6 +169,7 @@ struct hero {
 	void			set(stat_s id, int v) { stats[id] = v; }
 	void			setname(const char* v) { name = v; }
 	void			upkeep();
+	int				whatdo();
 private:
 	const char*		name;
 	gender_s		gender;

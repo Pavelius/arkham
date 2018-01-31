@@ -14,6 +14,7 @@ static struct stat_i {
 {"Stamina", "Жизнь"},
 {"Clue", "Улика"},
 {"Money", "Деньги"},
+{"Focus", "Фокус"},
 // Special damage
 {"Stamina Maximum", "Максимум жизни"},
 {"Sanity Maximum", "Рассудок максимум"},

@@ -151,6 +151,7 @@
     <ClCompile Include="draw_textf.cpp" />
     <ClCompile Include="grammar.cpp" />
     <ClCompile Include="hero.cpp" />
+    <ClCompile Include="hero_gameplay.cpp" />
     <ClCompile Include="io.cpp" />
     <ClCompile Include="item.cpp" />
     <ClCompile Include="logs.cpp" />

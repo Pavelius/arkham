@@ -64,20 +64,22 @@ assert_enum(action, Discard);
 //	return Speed;
 //}
 
-char hero::getcount(stat_s id, number_s value) const {
+char hero::getcount(stat_s id, char value) const {
 	switch(value) {
 	case Half: return get(id) / 2;
 	case All: return get(id);
 	case OneDice: return 1 + rand() % 6;
 	case TwoDice: return 2 + rand() % 6 + rand() % 6;
-	default: return 1 + (value - One);
+	default: return value;
 	}
 }
 
-void hero::apply(action_s id) {
+void hero::apply(action_s id, bool* discard) {
 	if(!id)
 		return;
 	auto& e = action_data[id];
 	if(e.set)
 		(this->*e.set)(e.stat, e.count);
+	if(discard)
+		*discard = (id == Discard);
 }

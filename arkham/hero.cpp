@@ -7,13 +7,13 @@ static struct hero_i {
 	const char*			name;
 	special_s			special;
 	location_s			location;
-	char				sanity, stamina;
+	char				sanity, stamina, focus;
 	char				stats[Luck + 1];
 	action_s			possessions[8];
 	item_s				possessions_items[4];
 } hero_data[] = {
-	{"ashcan", "Ашхан \"Пит\"", Scrounge, RiverDocks, 4, 6, {0, 6, 2, 5, 0, 3}, {Add1Money, Add3Clue, AddCommonItem, AddUniqueItem, AddSpell}, {AllyDuke}},
-	{"joe", "Джо Диамонд", Hunches, PoliceStation, 4, 6, {3, 4, 2, 3, 0, 3}, {Add7Money, Add3Clue, Add2CommonItem, AddSkill}, {PistolAutomatic45}},
+	{"ashcan", "Ашхан \"Пит\"", Scrounge, RiverDocks, 4, 6, 1, {0, 6, 2, 5, 0, 3}, {Add1Money, Add3Clue, AddCommonItem, AddUniqueItem, AddSpell}, {AllyDuke}},
+	{"joe", "Джо Диамонд", Hunches, PoliceStation, 4, 6, 3, {3, 4, 2, 3, 0, 3}, {Add7Money, Add3Clue, Add2CommonItem, AddSkill}, {PistolAutomatic45}},
 };
 
 static hero_i* find(const char* id) {
@@ -24,7 +24,7 @@ static hero_i* find(const char* id) {
 	return 0;
 }
 
-item_s getskill(stat_s id) {
+static item_s getskill(stat_s id) {
 	switch(id) {
 	case Fight: return SkillFight;
 	case Will: return SkillWill;
@@ -60,6 +60,8 @@ void hero::create(const char* id) {
 	set(p->special);
 	set(p->location);
 	setname(p->name);
+	set(StaminaMaximum, p->stamina);
+	set(SanityMaximum, p->sanity);
 	for(auto& e : focus)
 		e = 2;
 	for(auto i = Speed; i <= Luck; i = (stat_s)(i + 1))
@@ -68,6 +70,8 @@ void hero::create(const char* id) {
 		apply(e);
 	for(auto e : p->possessions_items)
 		add(e);
+	set(Stamina, get(StaminaMaximum));
+	set(Sanity, get(SanityMaximum));
 }
 
 bool hero::remove(item_s v) {
@@ -86,7 +90,7 @@ static char* dices(char* result, const char* source) {
 	return result;
 }
 
-int getresult(const char* result, int success_number) {
+static int getresult(const char* result, int success_number) {
 	auto r = 0;
 	for(auto i = 0; result[i] > 0; i++) {
 		if(result[i] >= success_number)
@@ -99,7 +103,7 @@ static void addie(char* result) {
 	zcat(result, (char)(1 + (rand() % 6)));
 }
 
-char* getstr(char* result, stat_s id, int bonus) {
+static char* getstr(char* result, stat_s id, int bonus) {
 	if(bonus > 0)
 		return szprint(result, "%1+%2i", getstr(id), bonus);
 	else if(bonus < 0)
@@ -200,8 +204,4 @@ void hero::select(deck& result, stat_s group) const {
 
 char hero::get(item_s id) const {
 	return cards[id] - exhause[id];
-}
-
-void hero::upkeep() {
-	memset(exhause, 0, sizeof(exhause));
 }
