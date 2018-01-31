@@ -18,7 +18,6 @@ enum stat_s : unsigned char {
 	Speed, Sneak, Fight, Will, Lore, Luck,
 	Sanity, Stamina,
 	Clue, Money, Focus,
-	// Special damage
 	StaminaMaximum, SanityMaximum,
 	// Special checks
 	CombatCheck, EvadeCheck, HorrorCheck, SkillCheck, SpellCheck,
@@ -51,7 +50,11 @@ enum number_s : unsigned char {
 };
 enum location_s : unsigned char {
 	AnyLocation,
-	AdministrationBuilding, ArkhamAsylum, PoliceStation, RiverDocks, TrainStation, Woods
+	AdministrationBuilding, ArkhamAsylum, BankOfArkham, BlackCave, CuriositieShoppe,
+	GeneralStore, Graveyard, HibbsRoadhouse, HistoricalSociety, IndependenceSquare,
+	Library, MasBoardingHouse, Newspaper, PoliceStation, RiverDocks,
+	ScienceBuilding, SilverTwilightLodge, SouthChurch, StMarysHospital, TheUnnamable,
+	TheWitchHouse, TrainStation, UnvisitedIsle, VelmasDiner, Woods, YeOldeMagickShoppe
 };
 enum tag_s : unsigned char {
 	Tome, PhysicalWeapon, MagicalWeapon,
@@ -88,6 +91,13 @@ enum tid_s : unsigned char {
 };
 enum special_s : unsigned char {
 	Hunches, Scrounge,
+};
+enum mflag_s : unsigned char {
+	Undead,
+};
+enum monster_s : unsigned char {
+	Byakhee, Chthonian,
+	Zombie
 };
 template<typename T> struct cflags {
 	constexpr cflags() : data() {}
@@ -142,6 +152,12 @@ struct deck : adat<item_s, 128> {
 	static stat_s	getgroup(item_s id);
 	static void		initialize();
 };
+struct monster {
+	monster() = default;
+private:
+	monster_s		type;
+	location_s		postition;
+};
 struct hero {
 	operator bool() const { return name != 0; }
 	void			act(const char* format, ...) const;
@@ -158,13 +174,13 @@ struct hero {
 	char			get(stat_s id) const;
 	char			get(item_s id) const;
 	char			getcount(stat_s id, char value) const;
-	location_s		getlocation() const { return location; }
+	location_s		getlocation() const { return position; }
 	bool			is(special_s v) const { return special == v; }
 	bool			remove(item_s e);
 	int				roll(stat_s id, int bonus = 0, int difficult = 0, bool interactive = true);
 	void			run(quest& e);
 	void			select(deck& result, stat_s group) const;
-	void			set(location_s v) { location = v; }
+	void			set(location_s v) { position = v; }
 	void			set(special_s id) { special = id; }
 	void			set(stat_s id, int v) { stats[id] = v; }
 	void			setname(const char* v) { name = v; }
@@ -173,12 +189,19 @@ struct hero {
 private:
 	const char*		name;
 	gender_s		gender;
-	location_s		location;
 	special_s		special;
-	char			stats[Money + 1];
+	char			stats[SanityMaximum + 1];
 	char			focus[3];
 	char			cards[LastItem];
 	char			exhause[LastItem];
+	location_s		position;
+};
+struct location {
+	const char*		id;
+	const char*		name;
+	const char*		text; // When you look around
+	char			clue;
+	location_s		neightboard[4];
 };
 namespace logs {
 struct driver : stringcreator {
@@ -191,3 +214,4 @@ struct driver : stringcreator {
 };
 }
 extern hero			player;
+extern location		locations[YeOldeMagickShoppe + 1];

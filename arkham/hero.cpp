@@ -62,6 +62,7 @@ void hero::create(const char* id) {
 	setname(p->name);
 	set(StaminaMaximum, p->stamina);
 	set(SanityMaximum, p->sanity);
+	set(Focus, p->focus);
 	for(auto& e : focus)
 		e = 2;
 	for(auto i = Speed; i <= Luck; i = (stat_s)(i + 1))

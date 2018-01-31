@@ -154,8 +154,10 @@
     <ClCompile Include="hero_gameplay.cpp" />
     <ClCompile Include="io.cpp" />
     <ClCompile Include="item.cpp" />
+    <ClCompile Include="location.cpp" />
     <ClCompile Include="logs.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="monster.cpp" />
     <ClCompile Include="pma.cpp" />
     <ClCompile Include="point.cpp" />
     <ClCompile Include="print.cpp" />
