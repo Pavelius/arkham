@@ -97,6 +97,9 @@
     <ClCompile Include="monster.cpp">
       <Filter>Logic</Filter>
     </ClCompile>
+    <ClCompile Include="mythos.cpp">
+      <Filter>Logic</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Logic">

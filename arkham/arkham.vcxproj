@@ -158,6 +158,7 @@
     <ClCompile Include="logs.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="monster.cpp" />
+    <ClCompile Include="mythos.cpp" />
     <ClCompile Include="pma.cpp" />
     <ClCompile Include="point.cpp" />
     <ClCompile Include="print.cpp" />

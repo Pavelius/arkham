@@ -154,6 +154,7 @@ struct deck : adat<item_s, 128> {
 };
 struct monster {
 	monster() = default;
+	char			get(stat_s id);
 private:
 	monster_s		type;
 	location_s		postition;
