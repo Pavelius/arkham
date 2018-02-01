@@ -36,6 +36,16 @@ static item_s getskill(stat_s id) {
 	}
 }
 
+static stat_s getstat(stat_s id) {
+	switch(id) {
+	case CombatCheck: return Fight;
+	case EvadeCheck: return Sneak;
+	case HorrorCheck: return Will;
+	case SpellCheck: return Will;
+	default: return id;
+	}
+}
+
 char hero::get(stat_s id) const {
 	switch(id) {
 	case Speed: return stats[Speed] + focus[Speed / 2] + get(SkillSpeed);
@@ -113,13 +123,13 @@ static char* getstr(char* result, stat_s id, int bonus) {
 		return szprint(result, "%1", getstr(id));
 }
 
-int hero::roll(stat_s id, int bonus, int difficult, bool interactive) {
+int hero::roll(stat_s id_origin, int bonus, int difficult, bool interactive) {
 	int i; char result[32]; result[0] = 0; char temp[128];
+	auto id = getstat(id_origin);
 	auto skill = getskill(id);
-	auto count = get(id) + bonus;
-	auto success = 0;
 	auto success_number = 5;
 	auto ps = logs::getptr();
+	auto count = get(id) + bonus;
 	for(auto i = 0; i < count; i++)
 		addie(result);
 	while(true) {
@@ -128,19 +138,26 @@ int hero::roll(stat_s id, int bonus, int difficult, bool interactive) {
 			dices(zend(ps), result);
 			zcat(ps, ". ");
 		} else {
-			szprint(ps, "У вас недостаточно кубиков для броска.");
+			szprint(ps, "У вас недостаточно кубиков для броска [%1].", getstr(temp, id, bonus));
 		}
-		auto rn = getresult(result, success_number);
-		if(success >= difficult)
-			logs::add(1, "Принять результат с [%1i] успехами.", rn);
+		auto success = getresult(result, success_number) - difficult;
+		if(success < 0)
+			success = 0;
+		if(success)
+			logs::add(1, "Принять результат с [%1i] успехами.", success);
 		else
 			logs::add(1, "Принять провал.");
+		auto add_die_count = 1;
+		if(get(skill))
+			add_die_count++;
+		if(is(Hunches))
+			add_die_count++;
 		if(get(Clue))
-			logs::add(2, "Потратить улику, чтобы добавить к броску 1 кубик (осталось [%1i] улик).", get(Clue));
+			logs::add(2, "Потратить улику, чтобы добавить к броску [%2i] кубик (осталось [%1i] улик).", get(Clue), add_die_count);
 		auto id = logs::input(interactive, false, "Что будете делать?");
 		switch(id) {
 		case 1:
-			return success - difficult;
+			return success;
 		case 2:
 			addie(result);
 			if(get(skill))

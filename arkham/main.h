@@ -92,8 +92,8 @@ enum tid_s : unsigned char {
 enum special_s : unsigned char {
 	Hunches, Scrounge,
 };
-enum mflag_s : unsigned char {
-	Undead,
+enum monster_flag_s : unsigned char {
+	Ambush, Undead,
 };
 enum monster_s : unsigned char {
 	Byakhee, Chthonian,
@@ -154,10 +154,13 @@ struct deck : adat<item_s, 128> {
 };
 struct monster {
 	monster() = default;
+	monster(monster_s type) : type(type), position() {}
 	char			get(stat_s id);
+	const char*		getname() const;
+	bool			is(monster_flag_s id) const;
 private:
 	monster_s		type;
-	location_s		postition;
+	location_s		position;
 };
 struct hero {
 	operator bool() const { return name != 0; }
@@ -166,9 +169,11 @@ struct hero {
 	void			add(stat_s id, int value) { set(id, get(id) + value); }
 	void			apply(action_s id, bool* discard = 0);
 	void			clear();
+	bool			combat(monster& e);
 	void			choose(stat_s id, int count);
 	void			choose(stat_s id, int count, int draw_count, int draw_bottom);
 	void			create(const char* id);
+	bool			evade(monster& e);
 	void			focusing();
 	gender_s		getgender() const { return gender; }
 	const char*		getname() const { return name; }
@@ -177,8 +182,9 @@ struct hero {
 	char			getcount(stat_s id, char value) const;
 	location_s		getlocation() const { return position; }
 	bool			is(special_s v) const { return special == v; }
+	bool			isready() const { return get(Sanity) && get(Stamina); }
 	bool			remove(item_s e);
-	int				roll(stat_s id, int bonus = 0, int difficult = 0, bool interactive = true);
+	int				roll(stat_s id, int bonus = 0, int difficult = 1, bool interactive = true);
 	void			run(quest& e);
 	void			select(deck& result, stat_s group) const;
 	void			set(location_s v) { position = v; }

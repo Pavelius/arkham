@@ -2,9 +2,10 @@
 
 void test_main() {
 	deck::initialize();
+	monster e(Zombie);
 	player.create("joe");
 	player.upkeep();
-	player.roll(Sneak);
+	player.combat(e);
 }
 
 int main() {
