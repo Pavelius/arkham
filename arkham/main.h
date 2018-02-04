@@ -170,6 +170,7 @@ struct hero {
 	void			apply(action_s id, bool* discard = 0);
 	void			clear();
 	bool			combat(monster& e);
+	void			changeweapon(item_s& w1, item_s& w2);
 	void			choose(stat_s id, int count);
 	void			choose(stat_s id, int count, int draw_count, int draw_bottom);
 	void			create(const char* id);
@@ -210,6 +211,10 @@ struct location {
 	char			clue;
 	location_s		neightboard[4];
 };
+namespace item {
+int					get(item_s i, stat_s id);
+bool				is(item_s i, tag_s value);
+}
 namespace logs {
 struct driver : stringcreator {
 	gender_s		gender;

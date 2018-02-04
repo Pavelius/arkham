@@ -94,3 +94,13 @@ void deck::create(stat_s group) {
 stat_s deck::getgroup(item_s id) {
 	return item_data[id].type;
 }
+
+bool item::is(item_s i, tag_s value) {
+	return item_data[i].tags.is(value);
+}
+
+int item::get(item_s i, stat_s id) {
+	if(item_data[i].bonus.id == id)
+		return item_data[i].bonus.count;
+	return 0;
+}
